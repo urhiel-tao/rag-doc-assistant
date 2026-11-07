@@ -8,6 +8,12 @@ Permite cargar manuales, reglamentos o contratos en PDF, indexar semánticamente
 ![Tests](https://img.shields.io/badge/Tests-Pytest_%E2%9C%93_Passing-10b981?style=flat-square)
 ![Python](https://img.shields.io/badge/Python-3.11_--_3.14-blue?style=flat-square&logo=python&logoColor=white)
 
+<br/>
+
+<p align="center">
+  <img src="img/screenshot.png" width="100%" alt="DocDesk Preview" />
+</p>
+
 ---
 
 ## 🏗️ Arquitectura del Sistema
