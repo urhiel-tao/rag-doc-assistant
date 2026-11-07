@@ -1,0 +1,11 @@
+Paso;Fecha;Modulo;Componente;Tarea Realizada;Archivo;Objetivo Tecnico;Estado
+1;06/11/2026;Entorno;Workspace;Creacion de estructura de carpetas modular;c:\Users\uriel\OneDrive\Documentos\proyectos_git\rag-doc-assistant;Organizar arquitectura limpia para produccion;Completado
+2;06/11/2026;Dependencias;.venv;Creacion de entorno virtual Python 3.14 e instalacion de paquetes;.venv/Scripts, requirements.txt;Aislar dependencias (FastAPI, ChromaDB, PyPDF, Pytest);Completado
+3;06/11/2026;Configuracion;Core;Definicion de variables de entorno y directorios persistentes;app/core/config.py, .env.example;Configuracion centralizada de paths y settings de RAG;Completado
+4;06/11/2026;Ingestion;PDF Loader;Parser de PDFs con extraccion por pagina y algoritmo de chunking;app/services/pdf_loader.py;Extraer texto y generar fragmentos con solapamiento (overlap);Completado
+5;06/11/2026;Almacenamiento;Vector Store;Integracion persistente de ChromaDB con fallback semantico local;app/services/vector_store.py;Indexacion de embeddings y busqueda por similitud coseno;Completado
+6;06/11/2026;Orquestacion;RAG Engine;Motor RAG con prompt estricto contra alucinaciones y conexion a Gemini;app/services/rag_engine.py;Recuperar contexto y sintetizar respuestas con citas de pagina;Completado
+7;06/11/2026;API REST;Endpoints;Desarrollo de endpoints REST para upload, query, listado y borrado;app/api/endpoints.py;Exponer interfaz programatica documentada con OpenAPI;Completado
+8;06/11/2026;Frontend;Web UI;Panel web responsivo con Drag & Drop y chat interactivo en vivo;app/static/index.html;Interfaz visual moderna para pruebas y demostraciones en vivo;Completado
+9;06/11/2026;Testing;Pytest;Suite de pruebas unitarias automatizadas para parser, vector store y API;tests/test_rag.py;Garantizar calidad del software con pruebas automatizadas (4/4 passed);Completado
+10;06/11/2026;Despliegue;Runner & Git;Script de inicio 'run.py', README exhaustivo e inicializacion Git;run.py, README.md, .gitignore;Versionado en repositorio Git local listo para GitHub;Completado
