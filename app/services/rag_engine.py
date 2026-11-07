@@ -6,10 +6,8 @@ from app.services.vector_store import vector_store
 
 class RAGEngine:
     """
-    Motor central de RAG (Retrieval-Augmented Generation).
-    1. Recupera los fragmentos semánticamente relevantes desde la base vectorial.
-    2. Construye el prompt con contexto delimitado.
-    3. Consulta al LLM (Google Gemini) con salvaguardas contra alucinaciones.
+    Motor central de búsqueda semántica y generación contextual.
+    Recupera los fragmentos más afines del documento y consulta al modelo.
     """
 
     def __init__(self):
@@ -23,20 +21,19 @@ class RAGEngine:
         if not retrieved_chunks:
             return {
                 "query": query,
-                "answer": "No se encontraron fragmentos relevantes en los documentos indexados para responder a esta consulta.",
+                "answer": "No encontré información relacionada en los documentos cargados. Probá reformular la pregunta o subir el archivo correspondiente.",
                 "sources": [],
                 "model_used": "none"
             }
 
-        # Formatear contexto estructurado
         context_blocks = []
         sources = []
         for idx, chunk in enumerate(retrieved_chunks):
-            doc = chunk["metadata"].get("document", "desconocido")
+            doc = chunk["metadata"].get("document", "Documento")
             page = chunk["metadata"].get("page", 1)
             score = chunk.get("similarity_score", 0.0)
 
-            context_blocks.append(f"[Fragmento {idx + 1} | Documento: {doc} | Página: {page}]\n{chunk['text']}")
+            context_blocks.append(f"[Fragmento {idx + 1} | Archivo: {doc} | Pág. {page}]\n{chunk['text']}")
             sources.append({
                 "document": doc,
                 "page": page,
@@ -48,30 +45,25 @@ class RAGEngine:
         context_str = "\n\n".join(context_blocks)
 
         system_prompt = (
-            "Eres un analista experto en lectura y análisis de documentación técnica y corporativa.\n"
-            "Tu misión es responder con precisión a la pregunta del usuario utilizando ÚNICAMENTE los siguientes fragmentos oficiales.\n\n"
-            "REGLAS OBLIGATORIAS:\n"
-            "1. Responde de forma clara, profesional y estructurada (usa viñetas si ayuda a la claridad).\n"
-            "2. Cita la página o el documento que respalda tu respuesta.\n"
-            "3. Si la respuesta NO está en los fragmentos, di textualmente: 'La información solicitada no figura en los documentos provistos.'\n"
-            "4. NO agregues suposiciones ni inventes datos que no figuren en el contexto."
+            "Respondé la pregunta del usuario utilizando exclusivamente los fragmentos del documento provistos abajo.\n"
+            "- Sé claro, directo y conciso.\n"
+            "- Indicá el número de página de donde sale la información.\n"
+            "- Si el dato exacto no figura en el texto, decí simplemente que no está especificado en el documento.\n"
+            "- No inventes suposiciones ni agregues datos externos."
         )
 
-        user_content = f"--- FRAGMENTOS DE CONTEXTO ---\n{context_str}\n\n--- PREGUNTA DEL USUARIO ---\n{query}"
+        user_content = f"--- FRAGMENTOS DEL DOCUMENTO ---\n{context_str}\n\n--- PREGUNTA ---\n{query}"
 
-        # Llamada a Google Gemini si hay API Key disponible
         if self.api_key:
             answer = self._call_gemini_api(system_prompt, user_content)
             model_used = self.model
         else:
             answer = (
-                "ℹ️ **Modo Demostración Local (Sin API Key configurada):**\n\n"
-                f"El motor vectorial recuperó exitosamente **{len(sources)} fragmentos clave** con alta similitud semántica.\n\n"
-                "**Extracto más relevante encontrado:**\n"
-                f"> \"{sources[0]['excerpt']}\" *(Documento: {sources[0]['document']}, Página {sources[0]['page']})*\n\n"
-                "Para obtener síntesis generativa fluida en lenguaje natural, agrega tu `GEMINI_API_KEY` en el archivo `.env`."
+                f"Encontré este párrafo relevante en **{sources[0]['document']}** (Pág. {sources[0]['page']}):\n\n"
+                f"> \"{sources[0]['excerpt']}\"\n\n"
+                "*(Podés sumar tu clave de Gemini en el archivo `.env` para redactar respuestas completas automáticamente)*."
             )
-            model_used = "local-retrieval-demo"
+            model_used = "local-retrieval"
 
         return {
             "query": query,
@@ -81,7 +73,6 @@ class RAGEngine:
         }
 
     def _call_gemini_api(self, system_instruction: str, content: str) -> str:
-        """Invoca la API oficial REST de Google Gemini."""
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
         headers = {"Content-Type": "application/json"}
         payload = {
@@ -107,10 +98,10 @@ class RAGEngine:
                 candidates = data.get("candidates", [])
                 if candidates and candidates[0].get("content", {}).get("parts"):
                     return candidates[0]["content"]["parts"][0]["text"].strip()
-                return "No se pudo extraer una respuesta válida del modelo."
+                return "No se pudo leer la respuesta del servidor."
             else:
-                return f"Error en API Gemini (Status {response.status_code}): {response.text}"
+                return f"Error al consultar el modelo (Código {response.status_code})."
         except Exception as e:
-            return f"Error de conexión con el proveedor de IA: {str(e)}"
+            return f"Error de conexión: {str(e)}"
 
 rag_engine = RAGEngine()
