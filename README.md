@@ -1,6 +1,6 @@
-# RAG Doc Assistant 📄🤖
+# Asistente Documental RAG (DocDesk) 📄🤖
 
-Sistema de producción para **Análisis Inteligente y Consulta de Documentación Técnica** mediante **RAG (Retrieval-Augmented Generation)**, desarrollado con **FastAPI**, **ChromaDB**, **PyPDF** y la API de **Google Gemini**.
+Sistema de producción para **Análisis y Consulta de Documentación Técnica** mediante **RAG (Retrieval-Augmented Generation)**, desarrollado con **FastAPI**, **ChromaDB**, **PyPDF** y la API de **Google Gemini**.
 
 Permite cargar manuales, reglamentos o contratos en PDF, indexar semánticamente su contenido en fragmentos vectorizados y responder consultas complejas en lenguaje natural con **citas precisas del documento y número de página**.
 
